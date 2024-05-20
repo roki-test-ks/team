@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Звіт виконаних завдань</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        select,
+        input,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #success {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="form-container">
+        <form id="card--body">
+            <div class="form-group">
+                <label for="name">Адміністратор:</label>
+                <select id="name" name="name" required>
+                    <option value="">Виберіть своє ім'я</option>
+                    <option value="Рома">Рома</option>
+                    <option value="Єлена">Єлена</option>
+                    <option value="Оля">Оля</option>
+                    <option value="Макс">Макс</option>
+                    <option value="Антон">Антон</option>
+                    <option value="Сека">Сека</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="task">Завдання:</label>
+                <textarea id="task" name="task" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="status">Статус:</label>
+                <select id="status" name="status" required>
+                    <option value="">Виберіть статус</option>
+                    <option value="Виконано">Виконано</option>
+                    <option value="В процесі">В процесі</option>
+                    <option value="Відкладено">Відкладено</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="comments">Коментарі:</label>
+                <textarea id="comments" name="comments" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="challenges">Виклики та проблеми:</label>
+                <textarea id="challenges" name="challenges" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="suggestions">Пропозиції та ідеї:</label>
+                <textarea id="suggestions" name="suggestions" rows="4"></textarea>
+            </div>
+            <button type="submit">Відправити</button>
+        </form>
+        <div id="success"></div>
+    </div>
+
+    <script>
+        const TOKEN = "6735810512:AAFUyZ6QanTJ4V8SKPHiNLdOx7l9tD1RUWk";
+        const CHAT_ID = "-1002028539179";
+        const TOPIC_ID = "2"; // замініть на ідентифікатор вашої теми групи
+        const URL_API = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
+        const PIN_URL_API = `https://api.telegram.org/bot${TOKEN}/pinChatMessage`;
+        const EDIT_URL_API = `https://api.telegram.org/bot${TOKEN}/editMessageText`;
+        const success = document.getElementById('success');
+
+        let pinnedMessageId;
+        let pinnedMessageText = '<b>Закріплені звіти:</b>\n';
+
+        // Створити нове закріплене повідомлення
+        axios.post(URL_API, {
+            chat_id: CHAT_ID,
+            text: pinnedMessageText,
+            parse_mode: 'html'
+        })
+            .then((response) => {
+                pinnedMessageId = response.data.result.message_id;
+                console.log(`Ідентифікатор нового закріпленого повідомлення: ${pinnedMessageId}`);
+                // Закріпити нове повідомлення
+                return axios.post(PIN_URL_API, {
+                    chat_id: CHAT_ID,
+                    message_id: pinnedMessageId
+                });
+            })
+            .then(() => {
+                console.log('Нове повідомлення успішно закріплено.');
+            })
+            .catch((err) => {
+                console.error('Помилка створення та закріплення нового повідомлення:', err);
+            });
+
+        document.getElementById('card--body').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = this.name.value;
+            const task = this.task.value;
+            const status = this.status.value;
+            const comments = this.comments.value || "Немає";
+            const challenges = this.challenges.value || "Немає";
+            const suggestions = this.suggestions.value || "Немає";
+
+            if (name !== '') {
+                let message = `<b>Звіт виконаних завдань</b>\n`;
+                message += `<b>Адміністратор: </b> ${name}\n`;
+                message += `<b>Завдання: </b> ${task}\n`;
+                message += `<b>Статус: </b> ${status}\n`;
+                message += `<b>Коментарі: </b> ${comments}\n`;
+                message += `<b>Виклики та проблеми: </b> ${challenges}\n`;
+                message += `<b>Пропозиції та ідеї: </b> ${suggestions}`;
+
+                axios.post(URL_API, {
+                    chat_id: CHAT_ID,
+                    message_thread_id: TOPIC_ID, // Додати ідентифікатор теми
+                    parse_mode: 'html',
+                    text: message
+                })
+                    .then((res) => {
+                        const messageId = res.data.result.message_id;
+                        const newLink = `<a href="https://t.me/c/${CHAT_ID.substring(4)}/${messageId}">Звіт ${new Date().toLocaleDateString()}</a>\n`;
+                        pinnedMessageText += newLink;
+                        console.log(`Текст нового закріпленого повідомлення: ${pinnedMessageText}`);
+
+                        axios.post(EDIT_URL_API, {
+                            chat_id: CHAT_ID,
+                            message_id: pinnedMessageId,
+                            parse_mode: 'html',
+                            text: pinnedMessageText
+                        })
+                            .then(() => {
+                                success.innerHTML = "Звіт успішно відправлено та додано до закріпленого повідомлення!";
+                                success.style.display = "block";
+                            })
+                            .catch((err) => {
+                                console.error("Помилка оновлення закріпленого повідомлення: ", err.response ? err.response.data : err);
+                                success.innerHTML = "Повідомлення відправлено, але не вдалося оновити закріплене повідомлення.";
+                                success.style.display = "block";
+                            });
+                    })
+                    .catch((err) => {
+                        console.error("Помилка відправки: ", err.response ? err.response.data : err);
+                        success.innerHTML = `Помилка відправки звіту: ${err.response ? err.response.data.description : 'Невідома помилка'}`;
+                        success.style.display = "block";
+                    });
+            } else {
+                success.innerHTML = "Будь ласка, виберіть своє ім'я!";
+                success.style.display = "block";
+            }
+        });
+    </script>
+
+
+</body>
+
+</html>
