@@ -162,7 +162,7 @@
                 })
                     .then((res) => {
                         const messageId = res.data.result.message_id;
-                        const newLink = `<a href="https://t.me/c/${CHAT_ID.substring(4)}/${messageId}">📅 Звіт ${new Date().toLocaleDateString()}</a>\n`;
+                        const newLink = `<a href="https://t.me/c/${CHAT_ID.substring(4)}/${messageId}"> 📅 Звіт ${new Date().toLocaleDateString()}</a>\n`;
                         pinnedMessageText += newLink;
                         console.log(`Текст оновленого закріпленого повідомлення: ${pinnedMessageText}`);
 
