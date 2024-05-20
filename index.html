@@ -69,12 +69,12 @@
                 <label for="name">Адміністратор:</label>
                 <select id="name" name="name" required>
                     <option value="">Виберіть своє ім'я</option>
-                    <option value="Рома">Рома</option>
-                    <option value="Єлена">Єлена</option>
-                    <option value="Оля">Оля</option>
-                    <option value="Макс">Макс</option>
-                    <option value="Антон">Антон</option>
-                    <option value="Сека">Сека</option>
+                    <option value="Рома">Рома (нінзя) @roki0200</option>
+                    <option value="Макс">Макс (@maksnikaev)</option>
+                    <option value="Оля">Оля (@olimonchik02)</option>
+                    <option value="Єлена">Єлена (@ElenaKieV2023 )</option>
+                    <option value="Антон">Антон (@ATN_DNL)</option>
+                    <option value="seka">Саша (@Sekalad)</option>
                 </select>
             </div>
             <div class="form-group">
@@ -110,7 +110,7 @@
     <script>
         const TOKEN = "6735810512:AAFUyZ6QanTJ4V8SKPHiNLdOx7l9tD1RUWk";
         const CHAT_ID = "-1002028539179";
-        const TOPIC_ID = "2"; // замініть на ідентифікатор вашої теми групи
+        const TOPIC_ID = "97"; // замініть на ідентифікатор вашої теми групи
         const PINNED_MESSAGE_ID = 85; // Ідентифікатор існуючого закріпленого повідомлення
         const URL_API = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
         const EDIT_URL_API = `https://api.telegram.org/bot${TOKEN}/editMessageText`;
@@ -162,7 +162,7 @@
                 })
                     .then((res) => {
                         const messageId = res.data.result.message_id;
-                        const newLink = `<a href="https://t.me/c/${CHAT_ID.substring(4)}/${messageId}"> 📅 Звіт ${new Date().toLocaleDateString()}</a>\n`;
+                        const newLink = ` <a href="https://t.me/c/${CHAT_ID.substring(4)}/${messageId}"> 📅 Звіт ${new Date().toLocaleDateString()} від ${name}</a> \n`;
                         pinnedMessageText += newLink;
                         console.log(`Текст оновленого закріпленого повідомлення: ${pinnedMessageText}`);
 
@@ -179,13 +179,13 @@
                             })
                             .catch((err) => {
                                 console.error("Помилка оновлення закріпленого повідомлення: ", err.response ? err.response.data : err);
-                                success.innerHTML = "Повідомлення відправлено, але не вдалося оновити закріплене повідомлення.";
+                                success.innerHTML = "Повідомлення відправлено, але не вдалося оновити закріплене повідомлення. зверніться до @roki0200 (https://t.me/roki0200)";
                                 success.style.display = "block";
                             });
                     })
                     .catch((err) => {
                         console.error("Помилка відправки: ", err.response ? err.response.data : err);
-                        success.innerHTML = `Помилка відправки звіту: ${err.response ? err.response.data.description : 'Невідома помилка'}`;
+                        success.innerHTML = `Помилка відправки звіту: ${err.response ? err.response.data.description : 'Невідома помилка зверніться до @roki0200 (https://t.me/roki0200)'}`;
                         success.style.display = "block";
                     });
             } else {
