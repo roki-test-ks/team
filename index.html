@@ -143,29 +143,61 @@
         const TOKEN = "6735810512:AAFUyZ6QanTJ4V8SKPHiNLdOx7l9tD1RUWk";
         const CHAT_ID = "-1002028539179";
         const TOPIC_ID = "97"; // замініть на ідентифікатор вашої теми групи
-        const PINNED_MESSAGE_ID = 107; // Ідентифікатор існуючого закріпленого повідомлення
         const URL_API = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
         const EDIT_URL_API = `https://api.telegram.org/bot${TOKEN}/editMessageText`;
-        const GET_MESSAGE_URL_API = `https://api.telegram.org/bot${TOKEN}/getChat`;
+        const PIN_URL_API = `https://api.telegram.org/bot${TOKEN}/pinChatMessage`;
         const success = document.getElementById('success');
 
         let pinnedMessageText = '';
+        let pinnedMessageId;
 
         // Отримання інформації про закріплене повідомлення
         function getPinnedMessage() {
             axios.get(`https://api.telegram.org/bot${TOKEN}/getChat?chat_id=${CHAT_ID}`)
                 .then((response) => {
                     const pinnedMessage = response.data.result.pinned_message;
-                    if (pinnedMessage && pinnedMessage.message_id === PINNED_MESSAGE_ID) {
+                    if (pinnedMessage) {
                         pinnedMessageText = pinnedMessage.text;
+                        pinnedMessageId = pinnedMessage.message_id;
                         console.log(`Текст закріпленого повідомлення: ${pinnedMessageText}`);
                     } else {
-                        console.warn('Закріплене повідомлення не знайдено або ID не співпадає.');
-                        pinnedMessageText = '<b>Закріплені звіти:</b>\n';
+                        console.warn('Закріплене повідомлення не знайдено.');
+                        createPinnedMessage();
                     }
                 })
                 .catch((err) => {
                     console.warn('Помилка отримання закріпленого повідомлення:', err);
+                    createPinnedMessage();
+                });
+        }
+
+        function createPinnedMessage() {
+            pinnedMessageText = '<b>📌 Закріплені звіти:</b>\n';
+            axios.post(URL_API, {
+                chat_id: CHAT_ID,
+                text: pinnedMessageText,
+                parse_mode: 'html'
+            })
+                .then((res) => {
+                    pinnedMessageId = res.data.result.message_id;
+                    console.log(`Створено нове закріплене повідомлення з ID: ${pinnedMessageId}`);
+                    pinMessage(pinnedMessageId);
+                })
+                .catch((err) => {
+                    console.error('Помилка створення закріпленого повідомлення:', err);
+                });
+        }
+
+        function pinMessage(messageId) {
+            axios.post(PIN_URL_API, {
+                chat_id: CHAT_ID,
+                message_id: messageId
+            })
+                .then(() => {
+                    console.log('Повідомлення успішно закріплено.');
+                })
+                .catch((err) => {
+                    console.error('Помилка закріплення повідомлення:', err);
                 });
         }
 
@@ -182,7 +214,7 @@
             const suggestions = this.suggestions.value || "Немає";
 
             if (name !== '') {
-                let message = `📝 <b>Звіт завдань або цілей</b>\n`;
+                let message = `📝 <b>Звіт виконаних завдань</b>\n`;
                 message += `👤 <b>Адміністратор:</b> ${name}\n`;
                 message += `📋 <b>Завдання:</b> ${task}\n\n`;
                 message += `📊 <b>Статус:</b> ${status}\n`;
@@ -204,7 +236,7 @@
 
                         return axios.post(EDIT_URL_API, {
                             chat_id: CHAT_ID,
-                            message_id: PINNED_MESSAGE_ID,
+                            message_id: pinnedMessageId,
                             parse_mode: 'html',
                             text: pinnedMessageText
                         });
