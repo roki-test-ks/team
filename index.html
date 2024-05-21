@@ -6,59 +6,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Звіт виконаних завдань</title>
     <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f0f2f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
 
-        .form-container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
+    .n {
+        height: 8vh;
+    }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+    .form-container {
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px;
+    }
 
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
+    .form-group {
+        margin-bottom: 20px;
+    }
 
-        select,
-        input,
-        textarea {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-        }
+    label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: block;
+        color: #333;
+    }
 
-        button {
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+    select,
+    input,
+    textarea {
+        width: 100%;
+        padding: 12px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        font-size: 14px;
+        color: #333;
+        background-color: #f9f9f9;
+        transition: all 0.3s ease;
+    }
 
-        button:hover {
-            background-color: #45a049;
-        }
+    select:focus,
+    input:focus,
+    textarea:focus {
+        border-color: #4CAF50;
+        background-color: #fff;
+        outline: none;
+        box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+    }
 
-        #success {
-            display: none;
-            margin-top: 15px;
-            padding: 10px;
-            color: #4CAF50;
-            border: 1px solid #4CAF50;
-            border-radius: 5px;
-        }
-    </style>
+    button {
+        width: 100%;
+        padding: 15px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    #success {
+        display: none;
+        margin-top: 20px;
+        padding: 15px;
+        color: #4CAF50;
+        border: 1px solid #4CAF50;
+        border-radius: 5px;
+        background-color: #f9fff9;
+    }
+</style>
 </head>
 
 <body>
@@ -93,15 +124,15 @@
             </div>
             <div class="form-group">
                 <label for="comments">(не обов'язково) Коментарі:</label>
-                <textarea id="comments" name="comments" rows="4"></textarea>
+                <textarea id="comments" class="n" name="comments" rows="4"></textarea>
             </div>
             <div class="form-group">
                 <label for="challenges">(не обов'язково) Виклики та проблеми:</label>
-                <textarea id="challenges" name="challenges" rows="4"></textarea>
+                <textarea id="challenges" class="n" name="challenges" rows="4"></textarea>
             </div>
             <div class="form-group">
                 <label for="suggestions">(не обов'язково) Пропозиції та ідеї:</label>
-                <textarea id="suggestions" name="suggestions" rows="4"></textarea>
+                <textarea id="suggestions" class="n" name="suggestions" rows="4"></textarea>
             </div>
             <button type="submit">Відправити</button>
         </form>
