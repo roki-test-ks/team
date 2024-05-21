@@ -69,13 +69,13 @@
                 <label for="name">Адміністратор:</label>
                 <select id="name" name="name" required>
                     <option value="">Виберіть своє ім'я</option>
-                    <option value="Костя">Костя (@Crypto_K_SS)</option>
-                    <option value="Рома">Рома (нінзя) @roki0200</option>
-                    <option value="Макс">Макс (@maksnikaev)</option>
-                    <option value="Оля">Оля (@olimonchik02)</option>
-                    <option value="Єлена">Єлена (@ElenaKieV2023 )</option>
-                    <option value="Антон">Антон (@ATN_DNL)</option>
-                    <option value="seka">Саша (@Sekalad)</option>
+                    <option value="Костя (@Crypto_K_SS)">Костя (@Crypto_K_SS)</option>
+                    <option value="Рома (нінзя) @roki0200">Рома (нінзя) @roki0200</option>
+                    <option value="Макс (@maksnikaev)">Макс (@maksnikaev)</option>
+                    <option value="Оля (@olimonchik02)">Оля (@olimonchik02)</option>
+                    <option value="Єлена (@ElenaKieV2023)">Єлена (@ElenaKieV2023)</option>
+                    <option value="Антон (@ATN_DNL)">Антон (@ATN_DNL)</option>
+                    <option value="Саша (@Sekalad)">Саша (@Sekalad)</option>
                 </select>
             </div>
             <div class="form-group">
@@ -115,26 +115,30 @@
         const PINNED_MESSAGE_ID = 107; // Ідентифікатор існуючого закріпленого повідомлення
         const URL_API = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
         const EDIT_URL_API = `https://api.telegram.org/bot${TOKEN}/editMessageText`;
+        const GET_MESSAGE_URL_API = `https://api.telegram.org/bot${TOKEN}/getChat`;
         const success = document.getElementById('success');
 
         let pinnedMessageText = '';
 
         // Отримання інформації про закріплене повідомлення
-        axios.post(`https://api.telegram.org/bot${TOKEN}/getChat`, {
-            chat_id: CHAT_ID
-        })
-            .then((response) => {
-                const pinnedMessage = response.data.result.pinned_message;
-                if (pinnedMessage) {
-                    pinnedMessageText = pinnedMessage.text || '<b>Закріплені звіти:</b>\n';
-                    console.log(`Текст закріпленого повідомлення: ${pinnedMessageText}`);
-                } else {
-                    console.warn('Закріплене повідомлення не знайдено.');
-                }
-            })
-            .catch((err) => {
-                console.warn('Помилка отримання закріпленого повідомлення:', err);
-            });
+        function getPinnedMessage() {
+            axios.get(`https://api.telegram.org/bot${TOKEN}/getChat?chat_id=${CHAT_ID}`)
+                .then((response) => {
+                    const pinnedMessage = response.data.result.pinned_message;
+                    if (pinnedMessage && pinnedMessage.message_id === PINNED_MESSAGE_ID) {
+                        pinnedMessageText = pinnedMessage.text;
+                        console.log(`Текст закріпленого повідомлення: ${pinnedMessageText}`);
+                    } else {
+                        console.warn('Закріплене повідомлення не знайдено або ID не співпадає.');
+                        pinnedMessageText = '<b>Закріплені звіти:</b>\n';
+                    }
+                })
+                .catch((err) => {
+                    console.warn('Помилка отримання закріпленого повідомлення:', err);
+                });
+        }
+
+        getPinnedMessage();
 
         document.getElementById('card--body').addEventListener('submit', function (e) {
             e.preventDefault();
@@ -147,13 +151,13 @@
             const suggestions = this.suggestions.value || "Немає";
 
             if (name !== '') {
-                let message = `<b>Звіт виконаних завдань</b>\n`;
-                message += `<b>Адміністратор:</b> ${name}\n`;
-                message += `<b>Завдання:</b> ${task}\n`;
-                message += `<b>Статус:</b> ${status}\n`;
-                message += `<b>Коментарі:</b> ${comments}\n`;
-                message += `<b>Виклики та проблеми:</b> ${challenges}\n`;
-                message += `<b>Пропозиції та ідеї:</b> ${suggestions}`;
+                let message = `📝 <b>Звіт завдань або цілей</b>\n`;
+                message += `👤 <b>Адміністратор:</b> ${name}\n`;
+                message += `📋 <b>Завдання:</b> ${task}\n\n`;
+                message += `📊 <b>Статус:</b> ${status}\n`;
+                message += `💬 <b>Коментарі:</b> ${comments}\n`;
+                message += `⚠️ <b>Виклики та проблеми:</b> ${challenges}\n`;
+                message += `💡 <b>Пропозиції та ідеї:</b> ${suggestions}`;
 
                 axios.post(URL_API, {
                     chat_id: CHAT_ID,
@@ -163,30 +167,25 @@
                 })
                     .then((res) => {
                         const messageId = res.data.result.message_id;
-                        const newLink = ` <a href="https://t.me/c/${CHAT_ID.substring(4)}/${messageId}"> 📅 Звіт ${new Date().toLocaleDateString()} від ${name}</a> \n`;
-                        pinnedMessageText += newLink;
+                        const newLink = `<a href="https://t.me/c/${CHAT_ID.substring(4)}/${messageId}">📅 Звіт ${new Date().toLocaleDateString()} від ${name}</a>`;
+                        pinnedMessageText += `\n${newLink}`;
                         console.log(`Текст оновленого закріпленого повідомлення: ${pinnedMessageText}`);
 
-                        axios.post(EDIT_URL_API, {
+                        return axios.post(EDIT_URL_API, {
                             chat_id: CHAT_ID,
                             message_id: PINNED_MESSAGE_ID,
                             parse_mode: 'html',
-                            text: `<b>Закріплені звіти:</b>\n${pinnedMessageText}`
-                        })
-                            .then((response) => {
-                                console.log(response.data);
-                                success.innerHTML = "Звіт успішно відправлено та додано до закріпленого повідомлення!";
-                                success.style.display = "block";
-                            })
-                            .catch((err) => {
-                                console.error("Помилка оновлення закріпленого повідомлення: ", err.response ? err.response.data : err);
-                                success.innerHTML = "Повідомлення відправлено, але не вдалося оновити закріплене повідомлення. зверніться до @roki0200 (https://t.me/roki0200)";
-                                success.style.display = "block";
-                            });
+                            text: pinnedMessageText
+                        });
+                    })
+                    .then((response) => {
+                        console.log(response.data);
+                        success.innerHTML = "Звіт успішно відправлено та додано до закріпленого повідомлення!";
+                        success.style.display = "block";
                     })
                     .catch((err) => {
-                        console.error("Помилка відправки: ", err.response ? err.response.data : err);
-                        success.innerHTML = `Помилка відправки звіту: ${err.response ? err.response.data.description : 'Невідома помилка зверніться до @roki0200 (https://t.me/roki0200)'}`;
+                        console.error("Помилка оновлення закріпленого повідомлення: ", err.response ? err.response.data : err);
+                        success.innerHTML = "Повідомлення відправлено, але не вдалося оновити закріплене повідомлення. зверніться до @roki0200 (https://t.me/roki0200)";
                         success.style.display = "block";
                     });
             } else {
