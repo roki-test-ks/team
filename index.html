@@ -6,133 +6,170 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Звіт виконаних завдань</title>
     <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
-<style>
-    body {
-        font-family: 'Arial', sans-serif;
-        background-color: #f0f2f5;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-    }
-
-    .n {
-        height: 8vh;
-    }
-
-    .form-container {
-        background: #ffffff;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 500px;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    label {
-        font-weight: bold;
-        margin-bottom: 5px;
-        display: block;
-        color: #333;
-    }
-
-    select,
-    input,
-    textarea {
-        width: 100%;
-        padding: 12px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        box-sizing: border-box;
-        font-size: 14px;
-        color: #333;
-        background-color: #f9f9f9;
-        transition: all 0.3s ease;
-    }
-
-    select:focus,
-    input:focus,
-    textarea:focus {
-        border-color: #4CAF50;
-        background-color: #fff;
-        outline: none;
-        box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
-    }
-
-    button {
-        width: 100%;
-        padding: 15px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-        background-color: #45a049;
-    }
-
-    #success {
-        display: none;
-        margin-top: 20px;
-        padding: 15px;
-        color: #4CAF50;
-        border: 1px solid #4CAF50;
-        border-radius: 5px;
-        background-color: #f9fff9;
-    }
-</style>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+    
+        .form-container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+        }
+    
+        .form-group {
+            margin-bottom: 15px;
+        }
+    
+        .form-group-half {
+            display: flex;
+            justify-content: space-between;
+        }
+    
+        .form-group-half .form-group {
+            flex: 0 0 48%;
+            /* 40% width with some space between */
+        }
+    
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+            color: #333;
+        }
+    
+        select,
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 14px;
+            color: #333;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+    
+        select:focus,
+        input:focus,
+        textarea:focus {
+            border-color: #4CAF50;
+            background-color: #fff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+        }
+    
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+    
+        button:hover {
+            background-color: #45a049;
+        }
+    
+        #success {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+            border-radius: 5px;
+            background-color: #f9fff9;
+        }
+    
+        @media (max-width: 600px) {
+            .form-container {
+                padding: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+    
+            button {
+                padding: 12px;
+                font-size: 14px;
+            }
+    
+            .form-group-half {
+                flex-direction: column;
+            }
+    
+            .form-group-half .form-group {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+    
+            .form-group-half .form-group:last-child {
+                margin-bottom: 0;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
     <div class="form-container">
         <form id="card--body">
-            <div class="form-group">
-                <label for="name">Адміністратор:</label>
-                <select id="name" name="name" required>
-                    <option value="">Виберіть своє ім'я</option>
-                    <option value="Костя (@Crypto_K_SS)">Костя (@Crypto_K_SS)</option>
-                    <option value="Рома (нінзя) @roki0200">Рома (нінзя) @roki0200</option>
-                    <option value="Макс (@maksnikaev)">Макс (@maksnikaev)</option>
-                    <option value="Оля (@olimonchik02)">Оля (@olimonchik02)</option>
-                    <option value="Єлена (@ElenaKieV2023)">Єлена (@ElenaKieV2023)</option>
-                    <option value="Антон (@ATN_DNL)">Антон (@ATN_DNL)</option>
-                    <option value="Саша (@Sekalad)">Саша (@Sekalad)</option>
-                </select>
+            <div class="form-group-half">
+                <div class="form-group">
+                    <label for="name">Адміністратор:</label>
+                    <select id="name" name="name" required>
+                        <option value="">Виберіть своє ім'я</option>
+                        <option value="Костя (@Crypto_K_SS)">Костя (@Crypto_K_SS)</option>
+                        <option value="Рома (нінзя) @roki0200">Рома (нінзя) @roki0200</option>
+                        <option value="Макс (@maksnikaev)">Макс (@maksnikaev)</option>
+                        <option value="Оля (@olimonchik02)">Оля (@olimonchik02)</option>
+                        <option value="Єлена (@ElenaKieV2023)">Єлена (@ElenaKieV2023)</option>
+                        <option value="Антон (@ATN_DNL)">Антон (@ATN_DNL)</option>
+                        <option value="Саша (@Sekalad)">Саша (@Sekalad)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="status">Статус:</label>
+                    <select id="status" name="status" required>
+                        <option value="">Виберіть статус</option>
+                        <option value="Виконано">Виконано</option>
+                        <option value="В процесі">В процесі</option>
+                        <option value="Відкладено">Відкладено</option>
+                    </select>
+                </div>
             </div>
             <div class="form-group">
                 <label for="task">Завдання:</label>
                 <textarea id="task" name="task" rows="4" required></textarea>
             </div>
             <div class="form-group">
-                <label for="status">Статус:</label>
-                <select id="status" name="status" required>
-                    <option value="">Виберіть статус</option>
-                    <option value="Виконано">Виконано</option>
-                    <option value="В процесі">В процесі</option>
-                    <option value="Відкладено">Відкладено</option>
-                </select>
-            </div>
-            <div class="form-group">
                 <label for="comments">(не обов'язково) Коментарі:</label>
-                <textarea id="comments" class="n" name="comments" rows="4"></textarea>
+                <textarea id="comments" name="comments" rows="2"></textarea>
             </div>
             <div class="form-group">
                 <label for="challenges">(не обов'язково) Виклики та проблеми:</label>
-                <textarea id="challenges" class="n" name="challenges" rows="4"></textarea>
+                <textarea id="challenges" name="challenges" rows="2"></textarea>
             </div>
             <div class="form-group">
                 <label for="suggestions">(не обов'язково) Пропозиції та ідеї:</label>
-                <textarea id="suggestions" class="n" name="suggestions" rows="4"></textarea>
+                <textarea id="suggestions" name="suggestions" rows="2"></textarea>
             </div>
             <button type="submit">Відправити</button>
         </form>
@@ -172,7 +209,7 @@
         }
 
         function createPinnedMessage() {
-            pinnedMessageText = '<b>📌 Закріплені звіти:</b>\n';
+            pinnedMessageText = '📌 Закріплені звіти:';
             axios.post(URL_API, {
                 chat_id: CHAT_ID,
                 text: pinnedMessageText,
@@ -216,7 +253,7 @@
             if (name !== '') {
                 let message = `📝 <b>Звіт виконаних завдань</b>\n`;
                 message += `👤 <b>Адміністратор:</b> ${name}\n`;
-                message += `📋 <b>Завдання:</b> ${task}\n\n`;
+                message += `📋 <b>Завдання:</b> ${task}\n`;
                 message += `📊 <b>Статус:</b> ${status}\n`;
                 message += `💬 <b>Коментарі:</b> ${comments}\n`;
                 message += `⚠️ <b>Виклики та проблеми:</b> ${challenges}\n`;
@@ -237,8 +274,8 @@
                         return axios.post(EDIT_URL_API, {
                             chat_id: CHAT_ID,
                             message_id: pinnedMessageId,
-                            parse_mode: 'html',
-                            text: pinnedMessageText
+                            text: pinnedMessageText,
+                            parse_mode: 'html'
                         });
                     })
                     .then((response) => {
